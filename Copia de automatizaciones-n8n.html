@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automatizaciones N8N — Soluciones Inteligentes</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --accent: #c8f135;
+    --accent2: #ff6b35;
+    --text: #f0ede6;
+    --muted: #888;
+    --border: #222;
+    --card: #141414;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    color: var(--accent);
+  }
+
+  .nav-logo span { color: var(--text); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    padding: 10px 24px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s;
+  }
+
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,241,53,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(200,241,53,0.1);
+    border: 1px solid rgba(200,241,53,0.2);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    margin-bottom: 40px;
+    width: fit-content;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -3px;
+    margin-bottom: 32px;
+    max-width: 900px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 16px;
+  }
+
+  .stat-item { }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .hero-scroll::before {
+    content: '';
+    width: 40px; height: 1px;
+    background: var(--muted);
+  }
+
+  /* SECTIONS */
+  section { padding: 100px 48px; }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 500px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* SYSTEMS GRID */
+  .systems-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .systems-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2px;
+  }
+
+  .system-card {
+    background: var(--card);
+    padding: 40px;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .system-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+
+  .system-card:hover::before { transform: scaleX(1); }
+  .system-card:hover { border-color: #333; transform: translateY(-2px); }
+
+  .card-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .card-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 300;
+    margin-bottom: 24px;
+  }
+
+  .card-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .card-features li {
+    font-size: 13px;
+    color: #aaa;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .card-features li::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .card-hours {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hours-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .hours-val { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent); }
+
+  /* PLANS SECTION */
+  #planes { background: var(--bg2); }
+
+  .plans-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .plans-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .tab-btn:hover { border-color: #444; color: var(--text); }
+  .tab-btn.active { background: var(--accent); color: #0a0a0a; border-color: var(--accent); font-weight: 600; }
+
+  .plans-content { display: none; }
+  .plans-content.active { display: block; }
+
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .plan-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 40px 36px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .plan-card.featured {
+    border-color: var(--accent);
+    background: #111;
+  }
+
+  .plan-card.featured::before {
+    content: 'MÁS ELEGIDO';
+    position: absolute;
+    top: -1px; right: 24px;
+    background: var(--accent);
+    color: #0a0a0a;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 5px 12px;
+  }
+
+  .plan-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .plan-price-old {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: line-through;
+    margin-bottom: 4px;
+  }
+
+  .plan-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .plan-price span {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  .plan-promo {
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+
+  .plan-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 28px;
+  }
+
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .plan-features li {
+    font-size: 14px;
+    color: #bbb;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.4;
+  }
+
+  .plan-features li::before {
+    content: '✓';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    font-size: 13px;
+    margin-top: 1px;
+  }
+
+  .plan-hours-info {
+    background: rgba(200,241,53,0.05);
+    border: 1px solid rgba(200,241,53,0.1);
+    padding: 12px 16px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .plan-btn {
+    width: 100%;
+    padding: 14px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .plan-btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .plan-btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .plan-btn-filled {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #0a0a0a;
+  }
+
+  .plan-btn-filled:hover { opacity: 0.85; }
+
+  /* TIME SECTION */
+  #tiempos { background: var(--bg); }
+
+  .time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .time-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px;
+  }
+
+  .time-icon { font-size: 24px; margin-bottom: 16px; display: block; }
+
+  .time-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -0.3px;
+  }
+
+  .time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .time-row:last-child { border-bottom: none; }
+  .time-row-label { color: var(--muted); }
+  .time-row-val { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--accent); font-size: 13px; }
+
+  /* EXTRAS section */
+  #extras { background: var(--bg2); }
+
+  .extras-system {
+    margin-bottom: 64px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .extras-system:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .extras-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .extras-grid-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .extra-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    font-size: 14px;
+    color: #bbb;
+    line-height: 1.5;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .extra-item:hover { border-color: #333; }
+
+  .extra-item::before {
+    content: '+';
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+
+  /* CTA SECTION */
+  .cta-section {
+    padding: 120px 48px;
+    background: var(--bg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(200,241,53,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(40px, 6vw, 80px);
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 0.95;
+    margin-bottom: 24px;
+  }
+
+  .cta-section h2 em { font-style: normal; color: var(--accent); }
+
+  .cta-section p {
+    color: var(--muted);
+    font-size: 17px;
+    max-width: 480px;
+    margin: 0 auto 40px;
+    font-weight: 300;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #0a0a0a;
+    padding: 18px 48px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .cta-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--accent);
+  }
+
+  .footer-logo span { color: var(--muted); }
+
+  footer p {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 120px 20px 60px; }
+    section { padding: 60px 20px; }
+    .systems-grid { grid-template-columns: 1fr; }
+    .plans-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 24px; flex-wrap: wrap; }
+    .cta-section { padding: 80px 20px; }
+    footer { padding: 32px 20px; flex-direction: column; text-align: center; }
+    .time-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">n8n<span>automatiza</span></div>
+  <ul class="nav-links">
+    <li><a href="#sistemas">Sistemas</a></li>
+    <li><a href="#planes">Planes</a></li>
+    <li><a href="#extras">Extras</a></li>
+    <li><a href="#tiempos">Tiempos</a></li>
+  </ul>
+  <button class="nav-cta">Consultar ahora</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Automatización inteligente con n8n</div>
+  <h1>Tu negocio.<br><em>En piloto automático.</em></h1>
+  <p class="hero-sub">Sistemas de automatización a medida para nutricionistas, hoteles, inmobiliarias, empresas y más. Menos trabajo manual, más resultados.</p>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Sistemas disponibles</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Planes por sistema</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">A medida</div>
+    </div>
+  </div>
+  <div class="hero-scroll">Explorar sistemas</div>
+</div>
+
+<!-- SISTEMAS -->
+<section id="sistemas">
+  <div class="systems-header fade-up">
+    <div>
+      <div class="section-label">Automatizaciones disponibles</div>
+      <h2 class="section-title">8 sistemas<br>listos para vos</h2>
+    </div>
+    <p class="section-sub">Cada sistema está diseñado para un rubro específico, con integraciones reales y flujos probados.</p>
+  </div>
+
+  <div class="systems-grid">
+
+    <div class="system-card fade-up">
+      <span class="card-icon">🥗</span>
+      <div class="card-num">Sistema 01</div>
+      <h3 class="card-title">Fitness Tracker para Nutricionistas</h3>
+      <p class="card-desc">Seguimiento automático de pacientes, métricas diarias y reportes semanales sin carga manual.</p>
+      <ul class="card-features">
+        <li>Registro diario vía WhatsApp o formulario</li>
+        <li>Volcado automático a Google Sheets</li>
+        <li>Eventos en Google Calendar por paciente</li>
+        <li>Alertas si el paciente no registra datos</li>
+        <li>Reporte semanal por email con IA</li>
+        <li>Integración con MyFitnessPal y Google Fit</li>
+        <li>Planes de alimentación generados por IA</li>
+        <li>Dashboard en Looker Studio</li>
+        <li>Cobro automático con Mercado Pago</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">4 — 35 hs</span>
+      </div>
+    </div>
+
+    <div class="system-card fade-up">
+      <span class="card-icon">🚗</span>
+      <div class="card-num">Sistema 02</div>
+      <h3 class="card-title">Agencia de Autos</h3>
+      <p class="card-desc">Captura y calificación de leads automática, envío de autos disponibles y seguimiento hasta el cierre.</p>
+      <ul class="card-features">
+        <li>Bot que califica al cliente por WhatsApp</li>
+        <li>Clasificación: caliente, dudoso, curioso</li>
+        <li>Asignación automática al vendedor</li>
+        <li>Envío de autos disponibles al instante</li>
+        <li>Seguimiento a los 3 y 7 días</li>
+        <li>Publicación automática en Instagram y Facebook</li>
+        <li>Panel semanal de estadísticas</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">5 — 40 hs</span>
+      </div>
+    </div>
+
+    <div class="system-card fade-up">
+      <span class="card-icon">🏨</span>
+      <div class="card-num">Sistema 03</div>
+      <h3 class="card-title">Hotel & Reservas</h3>
+      <p class="card-desc">Gestión completa de habitaciones, reservas, check-in/out, precios dinámicos y alertas de temporada.</p>
+      <ul class="card-features">
+        <li>Captura desde Booking, Airbnb, Expedia y web</li>
+        <li>Asignación automática de habitaciones</li>
+        <li>Alertas de temporada y fines de semana largos</li>
+        <li>Gestión dinámica de precios por ocupación</li>
+        <li>Check-in/out automatizado por WhatsApp</li>
+        <li>Sincronización multicanal anti-overbooking</li>
+        <li>Publicación de promos con IA</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">5 — 45 hs</span>
+      </div>
+    </div>
+
+    <div class="system-card fade-up">
+      <span class="card-icon">📰</span>
+      <div class="card-num">Sistema 04</div>
+      <h3 class="card-title">Newsletter con IA</h3>
+      <p class="card-desc">Investigación semanal automática, cerebro digital personal y redacción de contenido con tu estilo.</p>
+      <ul class="card-features">
+        <li>Monitoreo de X, noticias e influencers</li>
+        <li>Clasificación: urgente, relevante, evergreen</li>
+        <li>Cerebro digital que aprende tu estilo</li>
+        <li>Borrador automático con tu tono de escritura</li>
+        <li>Alertas de temas trending en tiempo real</li>
+        <li>Distribución en email, LinkedIn y X</li>
+        <li>Predicción de temas para la semana siguiente</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">6 — 55 hs</span>
+      </div>
+    </div>
+
+    <div class="system-card fade-up">
+      <span class="card-icon">🏢</span>
+      <div class="card-num">Sistema 05</div>
+      <h3 class="card-title">Gestión Empresarial & RRHH</h3>
+      <p class="card-desc">Filtrado de CVs con IA, registro de asistencia, onboarding y evaluaciones automáticas.</p>
+      <ul class="card-features">
+        <li>Filtrado y ranking de CVs con IA</li>
+        <li>Agenda automática de entrevistas</li>
+        <li>Registro de entrada/salida por QR o WhatsApp</li>
+        <li>Onboarding digital completo</li>
+        <li>Gestión de vacaciones y licencias</li>
+        <li>Evaluaciones de desempeño automáticas</li>
+        <li>Control de gastos por foto de ticket</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">6 — 60 hs</span>
+      </div>
+    </div>
+
+    <div class="system-card fade-up">
+      <span class="card-icon">💸</span>
+      <div class="card-num">Sistema 06</div>
+      <h3 class="card-title">Gestión de Deudores</h3>
+      <p class="card-desc">Seguimiento automático de deudas, recordatorios escalonados y cobro integrado con Mercado Pago.</p>
+      <ul class="card-features">
+        <li>Registro rápido de deudores por WhatsApp</li>
+        <li>Agenda automática en Google Calendar</li>
+        <li>Recordatorios a 7, 3 y 0 días del vencimiento</li>
+        <li>Escalada automática de cobranza</li>
+        <li>Gestión de cuotas con saldo actualizado</li>
+        <li>Link de pago automático por Mercado Pago</li>
+        <li>Score de comportamiento de pago</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">3 — 28 hs</span>
+      </div>
+    </div>
+
+    <div class="system-card fade-up">
+      <span class="card-icon">👴</span>
+      <div class="card-num">Sistema 07</div>
+      <h3 class="card-title">Asistente para Personas Mayores</h3>
+      <p class="card-desc">Recordatorios de medicamentos, turnos y tareas del día con alertas automáticas a familiares.</p>
+      <ul class="card-features">
+        <li>Recordatorios por WhatsApp en lenguaje simple</li>
+        <li>Confirmación de tareas y alertas si no responde</li>
+        <li>Resumen diario para la familia</li>
+        <li>Modo emergencia por palabras clave</li>
+        <li>Registro de presión y glucemia</li>
+        <li>Red de cuidadores escalonada</li>
+        <li>Informe mensual automático al médico</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">3 — 30 hs</span>
+      </div>
+    </div>
+
+    <div class="system-card fade-up">
+      <span class="card-icon">🏠</span>
+      <div class="card-num">Sistema 08</div>
+      <h3 class="card-title">Inmobiliaria</h3>
+      <p class="card-desc">Matching automático de propiedades, agenda de visitas, cobro de alquileres y publicación en portales.</p>
+      <ul class="card-features">
+        <li>Matching IA entre interesados y propiedades</li>
+        <li>Agenda automática de visitas en Calendar</li>
+        <li>Seguimiento post visita en 1, 5 y 15 días</li>
+        <li>Cobro mensual de alquileres automatizado</li>
+        <li>Publicación simultánea en Zonaprop y Argenprop</li>
+        <li>Alertas de vencimiento de contratos</li>
+        <li>Score de riesgo de inquilinos con IA</li>
+      </ul>
+      <div class="card-hours">
+        <span class="hours-label">Tiempo de desarrollo</span>
+        <span class="hours-val">5 — 48 hs</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PLANES -->
+<section id="planes">
+  <div class="plans-header fade-up">
+    <div class="section-label">Precios</div>
+    <h2 class="section-title">Elegí tu plan</h2>
+    <p class="section-sub" style="margin: 0 auto;">Tres niveles por sistema. Escalás cuando querés.</p>
+  </div>
+
+  <div class="plans-tabs">
+    <button class="tab-btn active" onclick="showPlan('nutricionista', this)">Nutricionista</button>
+    <button class="tab-btn" onclick="showPlan('autos', this)">Autos</button>
+    <button class="tab-btn" onclick="showPlan('hotel', this)">Hotel</button>
+    <button class="tab-btn" onclick="showPlan('newsletter', this)">Newsletter</button>
+    <button class="tab-btn" onclick="showPlan('empresa', this)">Empresa</button>
+    <button class="tab-btn" onclick="showPlan('deudores', this)">Deudores</button>
+    <button class="tab-btn" onclick="showPlan('mayores', this)">Personas mayores</button>
+    <button class="tab-btn" onclick="showPlan('inmobiliaria', this)">Inmobiliaria</button>
+  </div>
+
+  <!-- NUTRICIONISTA -->
+  <div class="plans-content active" id="plan-nutricionista">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Registro diario por Google Forms</li>
+          <li>Volcado automático a Google Sheets</li>
+          <li>Alertas básicas al nutricionista</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 4 a 6 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Bot por WhatsApp para registro</li>
+          <li>Google Calendar integrado</li>
+          <li>Seguimiento automático de pacientes</li>
+          <li>Reportes semanales automáticos</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 10 a 15 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>IA que analiza el progreso del paciente</li>
+          <li>Clasificación automática de riesgo</li>
+          <li>Integración con Google Fit y MyFitnessPal</li>
+          <li>Cobro automático con Mercado Pago / Stripe</li>
+          <li>Dashboard en Looker Studio</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 25 a 35 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTOS -->
+  <div class="plans-content" id="plan-autos">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Chatbot básico por WhatsApp</li>
+          <li>Guardar leads en Google Sheets</li>
+          <li>Alertas básicas al vendedor</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 5 a 8 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Clasificación automática de clientes</li>
+          <li>CRM básico integrado</li>
+          <li>Seguimiento automático a los 3 y 7 días</li>
+          <li>Reportes de ventas semanales</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 12 a 18 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>IA que responde clientes</li>
+          <li>Publicación automática de autos en redes</li>
+          <li>Análisis de precios de mercado</li>
+          <li>Captación y seguimiento completo</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 30 a 40 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOTEL -->
+  <div class="plans-content" id="plan-hotel">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Formulario de reserva en la web</li>
+          <li>Registro en Google Sheets y Calendar</li>
+          <li>Confirmación automática por email</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 5 a 8 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Bot por WhatsApp para reservas</li>
+          <li>Alertas de temporada y fines de semana largos</li>
+          <li>Seguimiento a consultas sin respuesta</li>
+          <li>Reportes semanales de ocupación</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 15 a 20 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Sincronización con Booking, Airbnb y Expedia</li>
+          <li>Gestión dinámica de precios</li>
+          <li>Publicación automática de promos con IA</li>
+          <li>Cobro con Mercado Pago / Stripe</li>
+          <li>Check-in/out automatizado</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 35 a 45 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <div class="plans-content" id="plan-newsletter">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Monitoreo de 5 fuentes fijas</li>
+          <li>Resumen semanal por email</li>
+          <li>Archivo en Google Sheets</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 6 a 10 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Monitoreo de X, noticias e influencers</li>
+          <li>Clasificación automática con IA</li>
+          <li>Borrador del newsletter generado por IA</li>
+          <li>Distribución por Mailchimp o Beehiiv</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 15 a 22 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Cerebro digital completo en Notion</li>
+          <li>Alertas en tiempo real de temas trending</li>
+          <li>Publicación multicanal (email, LinkedIn, X)</li>
+          <li>Análisis de competencia y predicción de temas</li>
+          <li>Estadísticas y optimización continua</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 40 a 55 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMPRESA -->
+  <div class="plans-content" id="plan-empresa">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Filtrado de CVs con IA</li>
+          <li>Registro de entrada y salida</li>
+          <li>Alertas básicas de ausentismo</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 6 a 10 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Ranking automático de candidatos</li>
+          <li>Onboarding digital completo</li>
+          <li>Gestión de vacaciones y licencias</li>
+          <li>Reportes mensuales de asistencia</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 18 a 25 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Evaluación de desempeño automatizada</li>
+          <li>Gestión de tareas con Notion / Trello</li>
+          <li>Control de gastos por foto de ticket</li>
+          <li>Encuestas de clima laboral</li>
+          <li>Dashboard completo en Looker Studio</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 45 a 60 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEUDORES -->
+  <div class="plans-content" id="plan-deudores">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Carga de deudores por formulario</li>
+          <li>Recordatorios automáticos por email</li>
+          <li>Agenda en Google Calendar</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 3 a 5 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Recordatorios por WhatsApp</li>
+          <li>Gestión de cuotas automática</li>
+          <li>Registro de pagos en Google Sheets</li>
+          <li>Alertas al acreedor por mora</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 8 a 12 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Integración con Mercado Pago / Stripe</li>
+          <li>Escalada automática de cobranza</li>
+          <li>Score de comportamiento de pago</li>
+          <li>Acuerdos de cuotas automáticos</li>
+          <li>Reporte mensual listo para contador</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 20 a 28 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAYORES -->
+  <div class="plans-content" id="plan-mayores">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Recordatorios por WhatsApp</li>
+          <li>Agenda en Google Calendar</li>
+          <li>Alertas básicas al familiar</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 3 a 5 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Confirmación de tareas por WhatsApp</li>
+          <li>Alertas escalonadas a familiares</li>
+          <li>Resumen diario automático para la familia</li>
+          <li>Registro en Google Sheets</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 8 a 12 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Modo emergencia con palabras clave</li>
+          <li>Registro de presión y glucemia</li>
+          <li>Informe mensual automático al médico</li>
+          <li>Reconocimiento de audio por WhatsApp</li>
+          <li>Red de cuidadores escalonada</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 22 a 30 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INMOBILIARIA -->
+  <div class="plans-content" id="plan-inmobiliaria">
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price-old">350 USD</div>
+        <div class="plan-price">100<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Captación de consultas por formulario y WhatsApp</li>
+          <li>Registro en Google Sheets</li>
+          <li>Confirmación automática al interesado</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 5 a 8 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-name">Medio</div>
+        <div class="plan-price-old">500 USD</div>
+        <div class="plan-price">300<span> USD/mes</span></div>
+        <div class="plan-promo">&nbsp;</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Matching automático de propiedades con IA</li>
+          <li>Agenda de visitas en Google Calendar</li>
+          <li>Seguimiento post visita automatizado</li>
+          <li>Reporte mensual al propietario</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 15 a 20 horas</div>
+        <button class="plan-btn plan-btn-filled">Consultar</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Completo</div>
+        <div class="plan-price-old">750 USD</div>
+        <div class="plan-price">700<span>–1000 USD/mes</span></div>
+        <div class="plan-promo">Sin costo si permanecés +4 meses</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Cobro automático de alquileres</li>
+          <li>Publicación simultánea en todos los portales</li>
+          <li>Score de riesgo de inquilinos</li>
+          <li>Análisis de mercado con IA</li>
+          <li>Dashboard completo en Looker Studio</li>
+        </ul>
+        <div class="plan-hours-info">⏱ Desarrollo: 35 a 48 horas</div>
+        <button class="plan-btn plan-btn-outline">Consultar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXTRAS -->
+<section id="extras">
+  <div class="fade-up" style="margin-bottom: 60px;">
+    <div class="section-label">Funcionalidades adicionales</div>
+    <h2 class="section-title">Todo lo que se<br>puede agregar</h2>
+    <p class="section-sub">Cada sistema tiene potencial de expansión. Estas son las funcionalidades extra más solicitadas.</p>
+  </div>
+
+  <div class="extras-system fade-up">
+    <div class="extras-title">🥗 Nutricionistas</div>
+    <div class="extras-grid-items">
+      <div class="extra-item">Integración con MyFitnessPal o Cronometer vía webhook — carga calórica automática</div>
+      <div class="extra-item">Conexión con Google Fit o Apple Health — pasos y frecuencia cardíaca automáticos</div>
+      <div class="extra-item">Generación de planes de alimentación personalizados con Claude o GPT</div>
+      <div class="extra-item">Dashboard en Looker Studio actualizado en tiempo real</div>
+      <div class="extra-item">Recordatorios de hidratación y comidas según el plan nutricional</div>
+      <div class="extra-item">Cobro automático de consultas con Mercado Pago o Stripe</div>
+    </div>
+  </div>
+
+  <div class="extras-system fade-up">
+    <div class="extras-title">🏨 Hotel</div>
+    <div class="extras-grid-items">
+      <div class="extra-item">Tour virtual automático antes de la visita presencial para filtrar interesados</div>
+      <div class="extra-item">Análisis de precios de la competencia en Booking y Airbnb en tiempo real</div>
+      <div class="extra-item">Encuesta de satisfacción automática post check-out</div>
+      <div class="extra-item">Gestión de programa de fidelidad para huéspedes frecuentes</div>
+      <div class="extra-item">Integración con sistema de llaves digitales</div>
+    </div>
+  </div>
+
+  <div class="extras-system fade-up">
+    <div class="extras-title">📰 Newsletter</div>
+    <div class="extras-grid-items">
+      <div class="extra-item">Monetización automática: media kit enviado a sponsors potenciales cuando creés</div>
+      <div class="extra-item">DM automático a periodistas e influencers del mismo nicho para colaboraciones</div>
+      <div class="extra-item">Traducción automática al inglés y distribución a lista separada</div>
+      <div class="extra-item">Análisis de sentimiento antes de publicar para detectar controversias</div>
+      <div class="extra-item">Predicción de temas que van a explotar en los próximos 7 días</div>
+      <div class="extra-item">Respuestas de suscriptores convertidas automáticamente en contenido futuro</div>
+    </div>
+  </div>
+
+  <div class="extras-system fade-up">
+    <div class="extras-title">🏢 Empresa</div>
+    <div class="extras-grid-items">
+      <div class="extra-item">Gestión de proveedores: orden de compra automática cuando el stock baja del mínimo</div>
+      <div class="extra-item">Control de gastos: foto del ticket por WhatsApp → registro y categorización con IA</div>
+      <div class="extra-item">Encuestas de clima laboral mensuales con informe de satisfacción automático</div>
+      <div class="extra-item">Asignación automática de capacitaciones según resultado de evaluación</div>
+      <div class="extra-item">Renovación de contratos: alerta 60 días antes con borrador generado por IA</div>
+      <div class="extra-item">Seguridad y accesos: log de movimientos por área y alerta fuera de horario</div>
+    </div>
+  </div>
+
+  <div class="extras-system fade-up">
+    <div class="extras-title">💸 Deudores</div>
+    <div class="extras-grid-items">
+      <div class="extra-item">Acuerdos de pago automáticos con nuevo calendario de cuotas si el deudor no puede pagar</div>
+      <div class="extra-item">Intereses por mora calculados automáticamente cada día de atraso</div>
+      <div class="extra-item">Carta documento o nota de cobranza formal generada automáticamente</div>
+      <div class="extra-item">Blacklist automática de deudores sin respuesta después de 90 días</div>
+      <div class="extra-item">Integración con AFIP: captura facturas y arranca el seguimiento solo</div>
+      <div class="extra-item">Notificación automática a garantes cuando el deudor entra en mora</div>
+    </div>
+  </div>
+
+  <div class="extras-system fade-up">
+    <div class="extras-title">👴 Personas Mayores</div>
+    <div class="extras-grid-items">
+      <div class="extra-item">Recordatorio de hidratación cada 2 horas, especialmente en verano</div>
+      <div class="extra-item">Control de presión o glucemia: registra el valor y alerta si está fuera de rango</div>
+      <div class="extra-item">Informe mensual de métricas de salud enviado automáticamente al médico</div>
+      <div class="extra-item">Reconocimiento de voz: audio por WhatsApp transcripto y registrado automáticamente</div>
+      <div class="extra-item">Integración con farmacia: alerta cuando queda poco stock de medicamento</div>
+      <div class="extra-item">Diario de bienestar diario con gráfico semanal para familia y médico</div>
+    </div>
+  </div>
+
+  <div class="extras-system fade-up">
+    <div class="extras-title">🏠 Inmobiliaria</div>
+    <div class="extras-grid-items">
+      <div class="extra-item">Tour virtual automático enviado antes de coordinar visita presencial</div>
+      <div class="extra-item">Análisis de mercado: scraping de Zonaprop para comparar precios automáticamente</div>
+      <div class="extra-item">Firma digital de contratos con DocuSign o FirmaDoc desde el celular</div>
+      <div class="extra-item">Score de riesgo del inquilino basado en documentación y historial</div>
+      <div class="extra-item">Gestión de expensas y liquidación mensual automática</div>
+      <div class="extra-item">Notificación automática a escribanía al cerrar una compraventa</div>
+    </div>
+  </div>
+</section>
+
+<!-- TIEMPOS -->
+<section id="tiempos">
+  <div class="fade-up" style="margin-bottom: 48px;">
+    <div class="section-label">Estimaciones</div>
+    <h2 class="section-title">Tiempos de<br>desarrollo</h2>
+    <p class="section-sub">Por sistema y plan, contando diseño, desarrollo, pruebas y ajustes. Si el cliente tiene todo definido y listo, estos tiempos se respetan.</p>
+  </div>
+
+  <div class="time-grid">
+    <div class="time-card fade-up">
+      <span class="time-icon">🥗</span>
+      <div class="time-title">Fitness Tracker</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">4 – 6 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">10 – 15 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">25 – 35 hs</span></div>
+    </div>
+    <div class="time-card fade-up">
+      <span class="time-icon">🚗</span>
+      <div class="time-title">Agencia de Autos</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">5 – 8 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">12 – 18 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">30 – 40 hs</span></div>
+    </div>
+    <div class="time-card fade-up">
+      <span class="time-icon">🏨</span>
+      <div class="time-title">Hotel & Reservas</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">5 – 8 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">15 – 20 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">35 – 45 hs</span></div>
+    </div>
+    <div class="time-card fade-up">
+      <span class="time-icon">📰</span>
+      <div class="time-title">Newsletter con IA</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">6 – 10 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">15 – 22 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">40 – 55 hs</span></div>
+    </div>
+    <div class="time-card fade-up">
+      <span class="time-icon">🏢</span>
+      <div class="time-title">Gestión Empresarial</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">6 – 10 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">18 – 25 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">45 – 60 hs</span></div>
+    </div>
+    <div class="time-card fade-up">
+      <span class="time-icon">💸</span>
+      <div class="time-title">Gestión de Deudores</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">3 – 5 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">8 – 12 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">20 – 28 hs</span></div>
+    </div>
+    <div class="time-card fade-up">
+      <span class="time-icon">👴</span>
+      <div class="time-title">Personas Mayores</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">3 – 5 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">8 – 12 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">22 – 30 hs</span></div>
+    </div>
+    <div class="time-card fade-up">
+      <span class="time-icon">🏠</span>
+      <div class="time-title">Inmobiliaria</div>
+      <div class="time-row"><span class="time-row-label">Plan básico</span><span class="time-row-val">5 – 8 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan medio</span><span class="time-row-val">15 – 20 hs</span></div>
+      <div class="time-row"><span class="time-row-label">Plan completo</span><span class="time-row-val">35 – 48 hs</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top: 40px; padding: 28px 32px; background: var(--card); border: 1px solid rgba(200,241,53,0.15); max-width: 700px;" class="fade-up">
+    <p style="font-size: 14px; color: var(--muted); line-height: 1.8;">
+      <strong style="color: var(--accent); font-family: 'Syne', sans-serif;">Importante:</strong> Estos tiempos asumen que el cliente tiene todo listo: accesos, formularios definidos y proceso claro. Si hay idas y vueltas o indefinición, los tiempos pueden aumentar entre un 30% y 50%. Con un equipo de dos personas, los planes completos se reducen casi a la mitad.
+    </p>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>¿Listo para<br><em>automatizar?</em></h2>
+  <p>Elegí tu sistema, elegí tu plan y empezamos. La primera consulta es gratis.</p>
+  <button class="cta-btn">Hablar con nosotros</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">n8n<span>automatiza</span></div>
+  <p>Automatizaciones inteligentes a medida · Powered by n8n + IA</p>
+  <p style="font-size: 12px;">© 2025 — Todos los derechos reservados</p>
+</footer>
+
+<script>
+  function showPlan(id, btn) {
+    document.querySelectorAll('.plans-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('plan-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
